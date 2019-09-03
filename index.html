@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Hong Kong ID Generator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+ 
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        /*
+        * Globals
+        */
+
+        /* Links */
+        a,
+        a:focus,
+        a:hover {
+            color: #fff;
+        }
+
+        /* Custom default button */
+        .btn-secondary,
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            color: #333;
+            text-shadow: none;
+            /* Prevent inheritance from `body` */
+            background-color: #fff;
+            border: .05rem solid #fff;
+        }
+
+        /*
+        * Base structure
+        */
+
+        html,
+        body {
+            height: 100%;
+            background-color: #333;
+        }
+        
+        body {
+            display: -ms-flexbox;
+            display: flex;
+            color: #fff;
+            text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+            box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+        }
+
+        .cover-container {
+            max-width: 42em;
+        }
+
+        /*
+        * Header
+        */
+        .masthead {
+           margin-bottom: 2rem;
+        }
+
+        .masthead-brand {
+            margin-bottom: 0;
+        }
+
+        .nav-masthead .nav-link {
+            padding: .25rem 0;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .5);
+            background-color: transparent;
+            border-bottom: .25rem solid transparent;
+        }
+
+        .nav-masthead .nav-link:hover,
+        .nav-masthead .nav-link:focus {
+            border-bottom-color: rgba(255, 255, 255, .25);
+        }
+
+        .nav-masthead .nav-link+.nav-link {
+            margin-left: 1rem;
+        }
+
+        .nav-masthead .active {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        @media (min-width: 48em) {
+            .masthead-brand {
+                float: left;
+            }
+            
+            .nav-masthead {
+                float: right;
+            }
+        }
+ 
+        /*
+        * Cover
+        */
+        .cover {
+            padding: 0 1.5rem;
+        }
+        .cover .btn-lg {
+            padding: .75rem 1.25rem;
+            font-weight: 700;
+        }
+        
+        /*
+        * Footer
+        */
+        .mastfoot {
+            color: rgba(255, 255, 255, .5);
+        }
+    </style>
+    <!-- Custom styles for this template -->
+    <!-- <link href="cover.css" rel="stylesheet"> -->
+</head>
+
+<body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="masthead mb-auto">
+            <div class="inner">
+                <h3 class="masthead-brand">HKID Generator</h3>
+                <!-- <nav class="nav nav-masthead justify-content-center">
+                    <a class="nav-link active" href="#">Home</a>
+                    <a class="nav-link" href="#">Features</a>
+                    <a class="nav-link" href="#">Contact</a>
+                </nav> -->
+            </div>
+        </header>
+
+        <main role="main" class="inner cover">
+            <h1 class="cover-heading">Hong Kong ID Generator</h1>
+            <p class="lead">Click the button to generate a valid Hong Kong ID with a correct checksum!</p>
+            <p class="lead">
+                <a href="#" onclick="myFunction()" class="btn btn-lg btn-secondary">GENERATE</a>
+            </p>
+            <p class="display-4" style="color:#0fb84f"; id="hkid">_ _ _ _ _ _ _ _ ( _ )</p>
+            <p class="lead" id="copied"></p>
+        </main>
+
+        <footer class="mastfoot mt-auto">
+            <div class="inner">
+                <p>Developed with &#9829; by Krzysztof Achinger. | Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+          ///////////////////////////////////////////////////////////
+         // Script generating HK ID written by Krzysztof Achinger //
+        ///////////////////////////////////////////////////////////
+
+        /*
+        TODO:
+        1. DONE Checksum http://keatonchan.blogspot.com/2009/08/hkid-check-digit-calculation-algorithm.html
+        2. DONE Generate and copy with one click
+        3. Jackpot function (if all generated letters and numbers are the same, display jackpot message, i.e. KK555555)
+        4. Refactor to use just one variable letters
+        5. DONE Include case for checksum = A or checksum = 0
+        6. Add comments to explain the code
+        7. DONE Beautify front-end with bootstrap
+        9. DONE Add credits
+        */
+        
+        function generateHKid() {
+            let letters = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+            let numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            let lettersMapping = {'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19, 'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29, 'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35}
+
+            function getRandomItem(type, lettersOrNumbersArray) { // Type: l1, l2, n, where l1 could be empty
+                switch (type) {
+                    case 'l1':
+                        result = lettersOrNumbersArray[Math.floor(Math.random() * lettersOrNumbersArray.length)]
+                        return result
+                        break;
+                    case 'l2':
+                        lettersOrNumbersArray.shift();
+                        result = lettersOrNumbersArray[Math.floor(Math.random() * lettersOrNumbersArray.length)]
+                        return result
+                        break;
+                    case 'n':
+                        result = lettersOrNumbersArray[Math.floor(Math.random() * lettersOrNumbersArray.length)]
+                        // console.log(result);
+                        return result.toString()
+                        break;
+                }
+            }
+
+            let hkid = getRandomItem('l1', letters) + getRandomItem('l2', letters) + getRandomItem('n', numbers) + getRandomItem('n', numbers) + getRandomItem('n', numbers) + getRandomItem('n', numbers) + getRandomItem('n', numbers) + getRandomItem('n', numbers)
+            //let hkid = 'GF310820'
+            function calculateCheckSum() {
+                if (hkid.length == 7) {
+                    let sum = 324 + lettersMapping[hkid[0]] * 8 + hkid[1] * 7 + hkid[2] * 6 + hkid[3] * 5 + hkid[4] * 4 + hkid[5] * 3 + hkid[6] * 2
+                    sum = 11 - (sum - (Math.floor(sum / 11) * 11))
+                    if (sum == 10) {
+                        sum = 'A'
+                    } else if (sum > 10) {
+                        sum = 0
+                    } else {
+                        sum
+                    }
+                    return sum
+                } else {
+                    let sum = lettersMapping[hkid[0]] * 9 + lettersMapping[hkid[1]] * 8 + hkid[2] * 7 + hkid[3] * 6 + hkid[4] * 5 + hkid[5] * 4 + hkid[6] * 3 + hkid[7] * 2
+                    sum = 11 - (sum - (Math.floor(sum / 11) * 11))
+                    if (sum == 10) {
+                        sum = 'A'
+                    } else if (sum > 10) {
+                        sum = 0
+                    } else {
+                        sum
+                    }
+                    return sum
+                }
+            }
+            return hkidWithCheckSum = hkid + '(' + calculateCheckSum() + ')'
+        }
+
+        function myFunction() {
+            // Puts generated HK ID in the paragraph with id="hkid"
+            document.getElementById("hkid").innerHTML = generateHKid()
+
+            // With the same click action HKID is copied to clipboard so it can be used elsewhere
+            let range = document.createRange();
+            range.selectNode(document.getElementById("hkid"));
+            window.getSelection().removeAllRanges(); // clear current selection
+            window.getSelection().addRange(range); // to select text
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges();// to deselect
+            document.getElementById("copied").innerHTML = "Copied to clipboard - go ahead and use it!"
+        }
+    </script>
+</body>
+
+</html>
